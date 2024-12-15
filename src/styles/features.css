@@ -1,0 +1,41 @@
+@keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -20px, 0); }
+  }
+  
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .rotate-y-10 {
+    transform: rotateY(10deg);
+  }
+  
+  .rotate-x-10 {
+    transform: rotateX(10deg);
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-slow {
+    animation: float 7s ease-in-out infinite;
+  }
+  
+  .animate-float-slower {
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .animate-float-slowest {
+    animation: float 9s ease-in-out infinite;
+  }
+  
+  .animate-wave {
+    animation: wave 2s linear infinite;
+  }
