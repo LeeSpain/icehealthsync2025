@@ -518,7 +518,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <main className="relative">
+    <main className="relative pt-[100px]">
       
       {/* Hero Section - Updated to match template */}
       <section className="bg-[#008B8B] h-[560px] relative overflow-hidden">
