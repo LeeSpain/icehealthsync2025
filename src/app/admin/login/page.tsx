@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import { Shield, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -18,11 +18,26 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      // Add your admin authentication logic here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
-      window.location.href = '/admin/dashboard';
+      const response = await fetch('/api/admin/login', {
+        method: 'POST', // Ensure POST method is set
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = '/admin/dashboard';
+      } else {
+        setError(data.message || 'Login failed');
+      }
     } catch (err) {
-      setError('Invalid admin credentials');
+      setError('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +82,7 @@ export default function AdminLogin() {
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                   placeholder="admin@example.com"
                 />
@@ -88,7 +103,7 @@ export default function AdminLogin() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
                   className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 />
                 <button
@@ -108,7 +123,7 @@ export default function AdminLogin() {
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => window.location.href = '/auth/forgot-password'}
+                onClick={() => (window.location.href = '/auth/forgot-password')}
                 className="text-sm font-medium text-teal-600 hover:text-teal-500"
               >
                 Forgot your password?
@@ -137,15 +152,13 @@ export default function AdminLogin() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  Return to main site
-                </span>
+                <span className="px-2 bg-white text-gray-500">Return to main site</span>
               </div>
             </div>
 
             <div className="mt-6">
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => (window.location.href = '/')}
                 className="w-full text-center text-sm text-gray-600 hover:text-gray-900"
               >
                 ← Back to Homepage
