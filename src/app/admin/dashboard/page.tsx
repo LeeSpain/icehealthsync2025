@@ -13,7 +13,11 @@ import {
   CheckCircle,
   AlertTriangle,
   BarChart,
-  Heart
+  Heart,
+  Menu,
+  LogOut,
+  Settings,
+  Loader2
 } from 'lucide-react';
 
 // Types
@@ -84,6 +88,48 @@ const sampleActivity: ActivityLog[] = [
     status: 'error'
   }
 ];
+
+// Components
+function AdminHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    // Add logout logic here
+    window.location.href = '/admin/login';
+  };
+
+  return (
+    <header className="bg-white border-b border-gray-200">
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <Shield className="h-8 w-8 text-teal-600" />
+          <h1 className="text-xl font-semibold text-gray-900">Admin Portal</h1>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100"
+          >
+            <Menu className="h-5 w-5 text-gray-500" />
+          </button>
+          
+          {isMenuOpen && (
+            <div className="absolute top-14 right-4 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+              <button 
+                onClick={handleLogout}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
 
 function MetricCard({ title, value, icon: Icon, trend, trendValue }: {
   title: string;
@@ -209,54 +255,93 @@ function SystemStatus() {
 }
 
 export default function AdminDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [metrics, setMetrics] = useState<SystemMetrics>(sampleMetrics);
   const [activities, setActivities] = useState<ActivityLog[]>(sampleActivity);
 
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      try {
+        // Add your authentication check logic here
+        const isAuth = localStorage.getItem('adminAuth');
+        if (!isAuth) {
+          window.location.href = '/admin/login';
+          return;
+        }
+        setIsAuthenticated(true);
+      } catch (error) {
+        window.location.href = '/admin/login';
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <MetricCard
-          title="Total Users"
-          value={metrics.totalUsers}
-          icon={Users}
-          trend="up"
-          trendValue="12% this week"
-        />
-        <MetricCard
-          title="Active Devices"
-          value={metrics.activeDevices}
-          icon={Activity}
-          trend="up"
-          trendValue="8% today"
-        />
-        <MetricCard
-          title="System Uptime"
-          value={metrics.systemUptime}
-          icon={BarChart}
-        />
-        <MetricCard
-          title="Active Alerts"
-          value={metrics.alertsToday}
-          icon={Bell}
-          trend="down"
-          trendValue="3 less than yesterday"
-        />
-      </div>
-
-      {/* Activity and Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ActivityList activities={activities} />
+    <div className="min-h-screen bg-gray-50">
+      <AdminHeader />
+      
+      <main className="p-6 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
         </div>
-        <div>
-          <SystemStatus />
+
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <MetricCard
+            title="Total Users"
+            value={metrics.totalUsers}
+            icon={Users}
+            trend="up"
+            trendValue="12% this week"
+          />
+          <MetricCard
+            title="Active Devices"
+            value={metrics.activeDevices}
+            icon={Activity}
+            trend="up"
+            trendValue="8% today"
+          />
+          <MetricCard
+            title="System Uptime"
+            value={metrics.systemUptime}
+            icon={BarChart}
+          />
+          <MetricCard
+            title="Active Alerts"
+            value={metrics.alertsToday}
+            icon={Bell}
+            trend="down"
+            trendValue="3 less than yesterday"
+          />
         </div>
-      </div>
+
+        {/* Activity and Status */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <ActivityList activities={activities} />
+          </div>
+          <div>
+            <SystemStatus />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
